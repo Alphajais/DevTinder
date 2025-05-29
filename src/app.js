@@ -45,21 +45,19 @@ const app = express();
  const connectdb = require('./config/database'); 
 const User = require('./models/user');
 
-
+app.use(express.json()); 
+// Middleware to parse JSON request bodies
+// Middleware to log request details
 app.post('/signup',async(req,res)=>{
-  const user = new User({
-    firstName:'Atul',
-    lastName: 'Jaiswal',
-    email: "atuljaiswal0912@gmail.com",
-    password:"Atul@123"
-  })
+   // created a new instance of the User model
+  // and saved it to the database
+  const user = new User(req.body);
  try{
   await user.save()
  res.send('User created successfully');
  }catch(err){
-  console.error('Error creating user:', err);
   res.status(500).send('Internal Server Error');
- }
+ } 
 })
 
 
