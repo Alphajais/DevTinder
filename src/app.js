@@ -59,6 +59,34 @@ app.post('/signup',async(req,res)=>{
   res.status(500).send('Internal Server Error');
  } 
 })
+//find user of single email
+app.get('/user', async (req, res) => {
+  const userEmail = req.body.email; // use req.query for GET
+  try {
+    const users = await User.find({ email: userEmail }); 
+    if (users.length === 0) {
+      return res.status(404).send('User not found');
+    }   
+    else{
+      res.json(users);
+    }
+ 
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+// find all users in database using get method {};
+app.get('/feed',async(req,res)=>{
+try{
+  const users = await User.find({}); // find the user in dsatabase 
+  res.send(users);
+} 
+catch(err){
+  res.status(500).send('Internal Server Error');  
+}
+});
+
 
 
 
