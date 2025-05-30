@@ -106,8 +106,11 @@ app.patch('/user', async (req, res) => {
   const data = req.body;
 
   try {
-    const allowedUpdates = ['firstName', 'lastName', 'age', 'photoUrl', 'userId'];
+    const allowedUpdates = ['firstName', 'lastName', 'age', 'photoUrl', 'userId', 'skills'];
     const isValidUpdate = Object.keys(data).every((key) => allowedUpdates.includes(key));
+    if(data.skills.length > 3){
+      return res.status(400).send('Skills cannot exceed 3 items');
+    }
 
     if (!isValidUpdate) {
       return res.status(400).send('Invalid update attributes');
