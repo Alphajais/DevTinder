@@ -48,17 +48,17 @@ const User = require('./models/user');
 app.use(express.json()); 
 // Middleware to parse JSON request bodies
 // Middleware to log request details
-app.post('/signup',async(req,res)=>{
-   // created a new instance of the User model
-  // and saved it to the database
+app.post('/signup', async (req, res) => {
   const user = new User(req.body);
- try{
-  await user.save()
- res.send('User created successfully');
- }catch(err){
-  res.status(500).send('Internal Server Error');
- } 
-})
+  try {
+    await user.save();
+    res.send('User created successfully');
+  } catch (err) {
+    console.error("Error saving user:", err); // ← Add this
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 //find user of single email
 app.get('/user', async (req, res) => {
   const userEmail = req.body.email; // use req.query for GET
@@ -100,6 +100,33 @@ res.send(user);
     res.status(500).send('Internal Server Error');
   } 
   
+});
+app.patch('/user', async (req, res) => {
+  const userId = req.body.userId;
+  const data = req.body;
+
+  try {
+    const allowedUpdates = ['firstName', 'lastName', 'age', 'photoUrl', 'userId'];
+    const isValidUpdate = Object.keys(data).every((key) => allowedUpdates.includes(key));
+
+    if (!isValidUpdate) {
+      return res.status(400).send('Invalid update attributes');
+    }
+
+    const user = await User.findByIdAndUpdate(userId, data, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.send(user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 
